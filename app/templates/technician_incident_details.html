@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{% block title %}Incident Details - ITAMIS{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Incident Details</h2>
+            <p class="text-muted mb-0">
+                {{ incident.incident_number }}
+            </p>
+        </div>
+
+        <a href="{{ url_for('main.technician_incidents') }}"
+           class="btn btn-outline-secondary">
+            ← Back to My Incidents
+        </a>
+    </div>
+
+
+    <!-- Incident Information -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">Incident Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <strong>Incident Number</strong>
+                    <div class="mt-1">
+                        {{ incident.incident_number }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Title</strong>
+                    <div class="mt-1">
+                        {{ incident.title }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Asset</strong>
+                    <div class="mt-1">
+                        {{ incident.asset.asset_tag }}
+                        -
+                        {{ incident.asset.name }}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Priority</strong>
+                    <div class="mt-1">
+
+                        {% if incident.priority == "HIGH" %}
+                            <span class="badge bg-danger">
+                                HIGH
+                            </span>
+                        {% elif incident.priority == "MEDIUM" %}
+                            <span class="badge bg-warning text-dark">
+                                MEDIUM
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                {{ incident.priority }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Status</strong>
+                    <div class="mt-1">
+
+                        {% if incident.status == "OPEN" %}
+                            <span class="badge bg-secondary">
+                                OPEN
+                            </span>
+
+                        {% elif incident.status == "ASSIGNED" %}
+                            <span class="badge bg-primary">
+                                ASSIGNED
+                            </span>
+
+                        {% elif incident.status == "IN_PROGRESS" %}
+                            <span class="badge bg-warning text-dark">
+                                IN PROGRESS
+                            </span>
+
+                        {% elif incident.status == "RESOLVED" %}
+                            <span class="badge bg-success">
+                                RESOLVED
+                            </span>
+
+                        {% elif incident.status == "CLOSED" %}
+                            <span class="badge bg-dark">
+                                CLOSED
+                            </span>
+
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                {{ incident.status }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Reported By</strong>
+                    <div class="mt-1">
+                        {{ incident.reporter.name }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <strong>Created At</strong>
+                    <div class="mt-1">
+                        {{ incident.created_at }}
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <strong>Description</strong>
+
+                    <div class="border rounded p-3 mt-2 bg-light">
+                        {{ incident.description }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Update Incident -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">Update Incident</h5>
+        </div>
+
+        <div class="card-body">
+
+            {% if incident.status == "ASSIGNED" %}
+
+                <p class="text-muted">
+                    This incident has been assigned to you.
+                    Start working on it to move it to
+                    <strong>IN PROGRESS</strong>.
+                </p>
+
+                <form method="POST"
+                      action="{{ url_for(
+                          'main.technician_update_incident',
+                          incident_id=incident.id
+                      ) }}">
+
+                    <input type="hidden"
+                           name="status"
+                           value="IN_PROGRESS">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Start Work
+                    </button>
+
+                </form>
+
+
+            {% elif incident.status == "IN_PROGRESS" %}
+
+                <p class="text-muted">
+                    You are currently working on this incident.
+                    Provide the resolution details when the issue
+                    has been fixed.
+                </p>
+
+                <form method="POST"
+                      action="{{ url_for(
+                          'main.technician_update_incident',
+                          incident_id=incident.id
+                      ) }}">
+
+                    <input type="hidden"
+                           name="status"
+                           value="RESOLVED">
+
+                    <div class="mb-3">
+
+                        <label for="resolution"
+                               class="form-label">
+                            Resolution
+                        </label>
+
+                        <textarea
+                            id="resolution"
+                            name="resolution"
+                            class="form-control"
+                            rows="6"
+                            required
+                            placeholder="Describe how the issue was resolved..."
+                        ></textarea>
+
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-success">
+                        Mark as Resolved
+                    </button>
+
+                </form>
+
+
+            {% elif incident.status == "RESOLVED" %}
+
+                <div class="alert alert-success">
+
+                    <h6 class="fw-bold">
+                        Incident Resolved
+                    </h6>
+
+                    <p class="mb-2">
+                        The incident has been marked as resolved.
+                    </p>
+
+                    <strong>Resolution:</strong>
+
+                    <div class="mt-2">
+                        {{ incident.resolution }}
+                    </div>
+
+                    {% if incident.resolved_at %}
+                        <hr>
+
+                        <strong>Resolved At:</strong>
+
+                        <div class="mt-1">
+                            {{ incident.resolved_at }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+            {% elif incident.status == "CLOSED" %}
+
+                <div class="alert alert-dark">
+                    This incident is closed and no further updates
+                    are available.
+                </div>
+
+
+            {% else %}
+
+                <div class="alert alert-secondary">
+                    No status update action is currently available.
+                </div>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+
+    <!-- Add Comment -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">Add Comment</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  action="{{ url_for(
+                      'main.add_incident_comment',
+                      incident_id=incident.id
+                  ) }}">
+
+                <div class="mb-3">
+
+                    <label for="comment"
+                           class="form-label">
+                        Comment
+                    </label>
+
+                    <textarea
+                        id="comment"
+                        name="comment"
+                        class="form-control"
+                        rows="4"
+                        required
+                        placeholder="Enter your comment..."
+                    ></textarea>
+
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Add Comment
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- Comments -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">Comments</h5>
+        </div>
+
+        <div class="card-body">
+
+            {% for comment in incident.comments %}
+
+                <div class="border rounded p-3 mb-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong>
+                            {{ comment.user.name }}
+                        </strong>
+
+                        <small class="text-muted">
+                            {{ comment.created_at }}
+                        </small>
+
+                    </div>
+
+                    <div class="mt-2">
+                        {{ comment.comment }}
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <p class="text-muted mb-0">
+                    No comments yet.
+                </p>
+
+            {% endfor %}
+
+        </div>
+    </div>
+
+
+    <!-- Incident History -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">Incident History</h5>
+        </div>
+
+        <div class="card-body">
+
+            {% if incident.history %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Date</th>
+                                <th>Changed By</th>
+                                <th>Old Status</th>
+                                <th>New Status</th>
+                                <th>Comment</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for history in incident.history %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ history.created_at }}
+                                    </td>
+
+                                    <td>
+                                        {{ history.changed_by }}
+                                    </td>
+
+                                    <td>
+                                        {{ history.old_status or "-" }}
+                                    </td>
+
+                                    <td>
+                                        {{ history.new_status or "-" }}
+                                    </td>
+
+                                    <td>
+                                        {{ history.comment or "-" }}
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <p class="text-muted mb-0">
+                    No history available.
+                </p>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
