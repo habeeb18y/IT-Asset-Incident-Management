@@ -125,7 +125,7 @@
                 <div class="col-md-6">
                     <strong>Created At</strong>
                     <div class="mt-1">
-                        {{ incident.created_at }}
+                        {{ incident.created_at|ist}}
                     </div>
                 </div>
 
@@ -162,7 +162,7 @@
 
                 <form method="POST"
                       action="{{ url_for(
-                          'main.technician_update_incident',
+                          'main.update_incident_status',
                           incident_id=incident.id
                       ) }}">
 
@@ -188,7 +188,7 @@
 
                 <form method="POST"
                       action="{{ url_for(
-                          'main.technician_update_incident',
+                          'main.update_incident_status',
                           incident_id=incident.id
                       ) }}">
 
@@ -246,7 +246,7 @@
                         <strong>Resolved At:</strong>
 
                         <div class="mt-1">
-                            {{ incident.resolved_at }}
+                            {{ incident.resolved_at|ist }}
                         </div>
                     {% endif %}
 
@@ -337,7 +337,7 @@
                         </strong>
 
                         <small class="text-muted">
-                            {{ comment.created_at }}
+                            {{ comment.created_at|ist }}
                         </small>
 
                     </div>
@@ -394,7 +394,7 @@
                                 <tr>
 
                                     <td>
-                                        {{ history.created_at }}
+                                        {{ history.created_at|ist }}
                                     </td>
 
                                     <td>

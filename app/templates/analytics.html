@@ -408,9 +408,7 @@
                             </td>
 
                             <td>
-                                {{ incident.created_at.strftime(
-                                    '%d %b %Y, %I:%M %p'
-                                ) if incident.created_at else '-' }}
+                                {{ incident.created_at|ist }}
                             </td>
 
                         </tr>

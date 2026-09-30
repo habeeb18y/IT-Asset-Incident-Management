@@ -211,8 +211,7 @@
                         </div>
 
                         <div>
-                            {{ incident.created_at.strftime('%d %b %Y, %I:%M %p')
-                               if incident.created_at else '-' }}
+                            {{ incident.created_at|ist }}
                         </div>
                     </div>
 
@@ -391,9 +390,7 @@
                             </strong>
 
                             <small class="text-muted">
-                                {{ comment.created_at.strftime(
-                                    '%d %b %Y, %I:%M %p'
-                                ) if comment.created_at else '-' }}
+                                {{ comment.created_at|ist }}
                             </small>
 
                         </div>
@@ -567,9 +564,7 @@
                     <div class="border-start border-primary border-3 ps-3 mb-4">
 
                         <div class="small text-muted">
-                            {{ history.created_at.strftime(
-                                '%d %b %Y, %I:%M %p'
-                            ) if history.created_at else '-' }}
+                            {{ history.created_at|ist }}
                         </div>
 
                         <div class="mt-1">
